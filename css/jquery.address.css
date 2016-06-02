@@ -11,24 +11,24 @@
     bottom: 0;
     width: 100%;
 }
-.city-wrapper .city-select-warp {
-    position: absolute;
+.city-select-warp {
+    position: fixed;
     width: 100%;
     min-width: 350px;
     max-width: 550px;
-    left: 0;
-    top: 100%;
+    left: -99999px;
+    top: -99999px;
     z-index: 999999
 }
 
-.city-wrapper .city-select-tab {
+.city-select-tab {
     border-top: 1px solid #ccc;
     border-left: 1px solid #ccc;
     background: #eee;
     overflow: hidden;
 }
 
-.city-wrapper .city-select-tab a {
+.city-select-tab a {
     position: relative;
     float: left;
     display: inline;
@@ -42,7 +42,7 @@
     cursor: pointer;
 }
 
-.city-wrapper .city-select-tab a:before {
+.city-select-tab a:before {
     content: "";
     position: absolute;
     right: 0;
@@ -52,13 +52,13 @@
     background-color: #ccc;
 }
 
-.city-wrapper .city-select-tab a.active {
+.city-select-tab a.active {
     background: #fff;
     border-bottom: 1px solid #fff;
     color: #428bca;
 }
 
-.city-wrapper .city-select {
+.city-select {
     display: none;
     border: 1px #ccc solid;
     border-top: 0;
@@ -68,7 +68,7 @@
     font-size: 12px;
 }
 
-.city-wrapper .city-select a {
+.city-select a {
     display: inline-block;
     color: #4D4D4D;
     padding: 5px 10px;
@@ -79,14 +79,14 @@
     margin-right: 2px;
 }
 
-.city-wrapper .city-select a:hover,
-.city-wrapper .city-select a.selected {
+.city-select a:hover,
+.city-select a.selected {
     background-color: #428bca;
     border-radius: 2px;
     color: #eee;
 }
 
-.city-wrapper .city-select-operation{
+.city-select-operation{
     text-align: right;
     background-color: #fff;
     border: 1px solid #ccc;
@@ -94,17 +94,18 @@
     padding: 5px;
 }
 
-.city-wrapper .city-select-operation .done{
-    background-color: #fff;
-    border: 1px solid #eee;
+.city-select-operation .addressDone{
+    color: #fff;
+    background-color: #337ab7;
+    border: 1px solid #2e6da4;
     padding: 4px 15px;
     cursor: pointer;
 }
 
-.city-wrapper .city-none {
+.city-none {
     display: none;
 }
 
-.city-wrapper .input-invisible {
+.input-invisible {
     visibility: hidden;
 }
