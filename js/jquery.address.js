@@ -16,22 +16,20 @@
 	        	'<div class="city-select city-street"></div>',
 	        '</div>',
 	        '<div class="city-select-operation">',
-	        	'<button class="btn btn-default done">确定</button>',
+	        	'<button class="btn btn-default addressDone">选好了</button>',
 	        '</div>'
 	    ];
 
     var defaultOpts = {
     	text: true,  // value use text, false use code
-    	type: "city" 
+    	type: "street" 
     };
 
     $.fn.city = function(opts) {
 
         var ths = this,
         	option = $.extend({}, defaultOpts, opts),
-            thsTop = ths.offset().top,
-            thsLeft = ths.offset().left,
-            thsWidth = this.outerWidth(),
+            thsWidth = ths.css("width") || ths.outerWidth(),
             thsHeight = ths.outerHeight(),
             $cityWrapper = $(wrapper),
             $selectorWrapper = $(selectorWrapper),
@@ -51,8 +49,8 @@
 
         //初始化
         var init = function() {
-        		$cityHtml.find("a[data-target$='" + defaultOpts.type + "']").nextAll().remove();
-        		$cityHtml.find(".city-" + defaultOpts.type).nextAll().remove();
+        		$cityHtml.find("a[data-target$='" + option.type + "']").nextAll().remove();
+        		$cityHtml.find(".city-" + option.type).nextAll().remove();
 
                 // 添加辅助html
                 ths.wrap($cityWrapper.width(thsWidth));
@@ -64,13 +62,14 @@
                 		.appendTo($cityWrapper);
         		ths.addClass("input-invisible");
                 $selectorWrapper = $selectorWrapper
+                		.attr("id", "citySelectorPop" + ths.attr("id") || ths.attr("name"))
                 		.addClass("city-none")
                 		.append($cityHtml)
-                		.appendTo($cityWrapper);
+                		.appendTo("body");
                 $cityTab = $selectorWrapper.find(".city-select-tab");
                 $citySelector = $selectorWrapper.find(".city-select");
                 $province = $selectorWrapper.find(".city-province");
-                $doneBtn = $selectorWrapper.find(".done");
+                $doneBtn = $selectorWrapper.find(".addressDone");
 
                 // 动态设置tab宽度
                 $cityTab.find("a").width((100 / $cityTab.find("a").length || 1) + "%");
@@ -81,10 +80,17 @@
                 $cityTab.on("click", "a", cityTab);
                 //select事件绑定
                 $citySelector.on("click", "a", addData);
-                $doneBtn.on("click", close);
+                $doneBtn.on("click", function(e){
+                    e.preventDefault();
+                    close();
+                });
             },
             cityShow = function() {
-                $selectorWrapper.removeClass("city-none");
+                $selectorWrapper.css({
+		    top: $maskInput.offset().top + $maskInput.outerHeight(),
+		    left: $maskInput.offset().left,
+		    width: $maskInput.width()
+		}).removeClass("city-none");
                 //默认显示省份内容
                 var $first = $cityTab.find("a").eq(0);
                 $first.trigger("click");
@@ -183,6 +189,7 @@
             },
             close = function() {
                 $selectorWrapper.addClass("city-none");
+                ths.trigger("hidden.jq.address");
             };
 
         //点击屏幕其余部位消失
@@ -194,6 +201,8 @@
         });
 
         init();
+        
+        return ths;
     }
 
 
