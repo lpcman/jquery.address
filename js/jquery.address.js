@@ -1,34 +1,43 @@
-(function($) {
+/**
+ *
+ * $("xxxx").city({
+ *      text: true,
+ *      type: "district"  //只到区一级，可选配置 province, city, district, street,
+ * });
+ *
+ *
+ */
+(function ($) {
 
     var wrapper = "<div class='city-wrapper' />",
-    	selectorWrapper = "<div class='city-select-warp' />",
-     	cityHtml = [
-	        '<div class="city-select-tab clearfix">',
-	        	'<a class="" data-target="city-province">省</a>',
-	        	'<a class="" data-target="city-city">市</a>',
-	        	'<a class="" data-target="city-district">县/区</a>',
-	        	'<a class="" data-target="city-street">街道</a>',
-	        '</div>',
-	        '<div class="city-select-content">',
-	        	'<div class="city-select city-province"></div>',
-	        	'<div class="city-select city-city"></div>',
-	        	'<div class="city-select city-district"></div>',
-	        	'<div class="city-select city-street"></div>',
-	        '</div>',
-	        '<div class="city-select-operation">',
-	        	'<button class="btn btn-default addressDone">选好了</button>',
-	        '</div>'
-	    ];
+        selectorWrapper = "<div class='city-select-warp' />",
+        cityHtml = [
+            '<div class="city-select-tab clearfix">',
+            '<a class="" data-target="city-province">省</a>',
+            '<a class="" data-target="city-city">市</a>',
+            '<a class="" data-target="city-district">县/区</a>',
+            '<a class="" data-target="city-street">街道</a>',
+            '</div>',
+            '<div class="city-select-content">',
+            '<div class="city-select city-province"></div>',
+            '<div class="city-select city-city"></div>',
+            '<div class="city-select city-district"></div>',
+            '<div class="city-select city-street"></div>',
+            '</div>',
+            '<div class="city-select-operation">',
+            '<button class="btn btn-default addressDone">选好了</button>',
+            '</div>'
+        ];
 
     var defaultOpts = {
-    	text: true,  // value use text, false use code
-    	type: "street" 
+        text: true,  // value use text, false use code
+        type: "street"
     };
 
-    $.fn.city = function(opts) {
+    $.fn.city = function (opts) {
 
         var ths = this,
-        	option = $.extend({}, defaultOpts, opts),
+            option = $.extend({}, defaultOpts, opts),
             thsWidth = ths.css("width") || ths.outerWidth(),
             thsHeight = ths.outerHeight(),
             $cityWrapper = $(wrapper),
@@ -42,30 +51,30 @@
                 province: ds,
                 city: [],
                 district: [],
-                street: [],
+                street: []
             },
             selectorResult = null,
             $cityHtml = $(cityHtml.join(""));
 
         //初始化
-        var init = function() {
-        		$cityHtml.find("a[data-target$='" + option.type + "']").nextAll().remove();
-        		$cityHtml.find(".city-" + option.type).nextAll().remove();
+        var init = function () {
+                $cityHtml.find("a[data-target$='" + option.type + "']").nextAll().remove();
+                $cityHtml.find(".city-" + option.type).nextAll().remove();
 
                 // 添加辅助html
                 ths.wrap($cityWrapper.width(thsWidth));
                 $cityWrapper = ths.parent();
                 $maskInput = ths.clone()
-                		.removeAttr("id")
-                		.removeAttr("name")
-                		.addClass("mask-input")
-                		.appendTo($cityWrapper);
-        		ths.addClass("input-invisible");
+                    .removeAttr("id")
+                    .removeAttr("name")
+                    .addClass("mask-input")
+                    .appendTo($cityWrapper);
+                ths.addClass("input-invisible");
                 $selectorWrapper = $selectorWrapper
-                		.attr("id", "citySelectorPop" + ths.attr("id") || ths.attr("name"))
-                		.addClass("city-none")
-                		.append($cityHtml)
-                		.appendTo("body");
+                    .attr("id", "citySelectorPop" + ths.attr("id") || ths.attr("name"))
+                    .addClass("city-none")
+                    .append($cityHtml)
+                    .appendTo("body");
                 $cityTab = $selectorWrapper.find(".city-select-tab");
                 $citySelector = $selectorWrapper.find(".city-select");
                 $province = $selectorWrapper.find(".city-province");
@@ -80,17 +89,22 @@
                 $cityTab.on("click", "a", cityTab);
                 //select事件绑定
                 $citySelector.on("click", "a", addData);
-                $doneBtn.on("click", function(e){
+                $doneBtn.on("click", function (e) {
                     e.preventDefault();
                     close();
                 });
             },
-            cityShow = function() {
+            cityShow = function () {
                 $selectorWrapper.css({
-		    top: $maskInput.offset().top + $maskInput.outerHeight(),
-		    left: $maskInput.offset().left,
-		    width: $maskInput.width()
-		}).removeClass("city-none");
+                    top: $maskInput.offset().top + $maskInput.outerHeight() - $(document).scrollTop(),
+                    left: $maskInput.offset().left,
+                    width: $maskInput.width()
+                }).removeClass("city-none");
+                $(document).on("scroll.citySelect", function () {
+                    $selectorWrapper.css({
+                        top: $maskInput.offset().top + $maskInput.outerHeight() - $(document).scrollTop()
+                    });
+                });
                 //默认显示省份内容
                 var $first = $cityTab.find("a").eq(0);
                 $first.trigger("click");
@@ -102,13 +116,13 @@
                 }
 
             },
-            addData = function() {
+            addData = function () {
                 var $ths = $(this),
                     thsID = $ths.data("id"),
                     thsTxt = $ths.text(),
                     $thsPa = $ths.parent(),
                     $activeTabA = $cityTab.find("a[class=active]");
-                	n = $activeTabA.index(),
+                n = $activeTabA.index(),
                     thsTarget = $activeTabA.data("target"),
                     nextTabA = $cityTab.find("a").eq(n + 1);
 
@@ -140,20 +154,20 @@
                 //更新所选城市的值
                 selectorResult = {
                     province: {
-                    	text: $citySelector.eq(0).find("a.selected").text(),
-                    	value: $citySelector.eq(0).find("a.selected").data("id")
+                        text: $citySelector.eq(0).find("a.selected").text(),
+                        value: $citySelector.eq(0).find("a.selected").data("id")
                     },
                     city: {
-                    	text: $citySelector.eq(1).find("a.selected").text(),
-                    	value: $citySelector.eq(1).find("a.selected").data("id")
+                        text: $citySelector.eq(1).find("a.selected").text(),
+                        value: $citySelector.eq(1).find("a.selected").data("id")
                     },
                     district: {
-                    	text: $citySelector.eq(2).find("a.selected").text(),
-                    	value: $citySelector.eq(2).find("a.selected").data("id")
+                        text: $citySelector.eq(2).find("a.selected").text(),
+                        value: $citySelector.eq(2).find("a.selected").data("id")
                     },
                     street: {
-                    	text: $citySelector.eq(3).find("a.selected").text(),
-                    	value: $citySelector.eq(3).find("a.selected").data("id")
+                        text: $citySelector.eq(3).find("a.selected").text(),
+                        value: $citySelector.eq(3).find("a.selected").data("id")
                     }
                 };
 
@@ -170,7 +184,7 @@
                 $maskInput.val(textVal);
                 ths.val(option.text === false ? codeVal : textVal);
             },
-            cityTab = function() {
+            cityTab = function () {
                 var $ths = $(this),
                     thsFor = $ths.data("target"),
                     $tabCon = $("." + thsFor);
@@ -179,7 +193,7 @@
                 $citySelector.hide();
                 $tabCon.show();
             },
-            firstAddData = function(arr, num) {
+            firstAddData = function (arr, num) {
                 $citySelector.eq(num).html("");
                 var strArr = [];
                 for (var i = 0; i < arr.length; i++) {
@@ -187,13 +201,14 @@
                 }
                 $citySelector.eq(num).append(strArr.join(""));
             },
-            close = function() {
+            close = function () {
                 $selectorWrapper.addClass("city-none");
+                $(document).off("scroll.citySelect");
                 ths.trigger("hidden.jq.address");
             };
 
         //点击屏幕其余部位消失
-        $(document).on("click", function(event) {
+        $(document).on("click", function (event) {
             var eo = $(event.target);
             if (!eo.parents().is(".city-select-warp") && !eo.hasClass("mask-input")) {
                 close();
@@ -201,7 +216,7 @@
         });
 
         init();
-        
+
         return ths;
     }
 
